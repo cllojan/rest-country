@@ -7,7 +7,7 @@ import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import Typography from "@mui/material/Typography";
-import currenciesData from "./currenciesData";
+
 import CardActions from "@mui/material/CardActions";
 import { width } from "@mui/system";
 const CardCountry = () => {
@@ -27,7 +27,7 @@ const CardCountry = () => {
 
   useEffect(() => {
     datos();
-  }, []);
+  });
 
   return (
     <>
@@ -122,7 +122,7 @@ const CardCountry = () => {
                   sx={{ ml: "25px", display: "flex", gap: "10px" }}
                 >
                   <span style={{ fontWeight: "bold" }}>Border Countries: </span>
-                  {elm.borders == undefined ? (
+                  {elm.borders === undefined ? (
                     <span>No border contries</span>
                   ) : (
                     Object.values(elm.borders).map((elm, index) => (

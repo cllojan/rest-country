@@ -18,6 +18,7 @@ import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import Typography from "@mui/material/Typography";
+import TextField from '@mui/material/TextField';
 
 import CircularProgress from "@mui/material/CircularProgress";
 
@@ -26,9 +27,9 @@ const Country = () => {
   const [url, setUrl] = useState("https://restcountries.com/v3/all");
   const [contry, setContry] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [postsPerPage, setPostsPerPage] = useState(12);
-
   const [search, setSearch] = useState("");
 
   const datos = async () => {
@@ -37,10 +38,10 @@ const Country = () => {
     setContry(dataJson);
     setLoading(true);
   };
-
+  
   useEffect(() => {
     datos();
-  }, [url]);
+  },[url] );
 
   const handleChange = (event) => {
     setLoading(false);
@@ -59,35 +60,55 @@ const Country = () => {
   };
 
   const onClickSearch = async (e) => {
-    setLoading(false);
-    const data = setUrl(`https://restcountries.com/v3/name/${search}`);
-    await setTimeout(() => {
-      setLoading(true);
-    }, 600);
-  };
-  const onKeyPressSearch = async (e) => {
-    if (e.keyCode === 13) {
+    if (search ==="") {
+      setError(true);
+      console.log("err");
+    } else {
       setLoading(false);
-      e.preventDefault();
       const data = setUrl(`https://restcountries.com/v3/name/${search}`);
       await setTimeout(() => {
         setLoading(true);
       }, 600);
     }
   };
+  const onKeyPressSearch = async (e) => {
+    if(e.keyCode ===13){
+  
+      if (search === ''){
+        setError(true);
+        e.preventDefault();
+        console.log("err");
+      }else{
+        setLoading(false);
+        e.preventDefault();
+        const data = setUrl(`https://restcountries.com/v3/name/${search}`);
+        await setTimeout(() => {
+          setLoading(true);
+        }, 600);
+      }
+    }
+  };
   const indexOfLastPost = currentPage * postsPerPage;
   const indexOfFirstPost = indexOfLastPost - postsPerPage;
-  const currentPosts = contry.slice(indexOfFirstPost, indexOfLastPost);
-
+  let currentPosts = [];
+  if(contry.status === 404){
+    window.location.reload(true);
+  }else{
+    currentPosts = contry.slice(indexOfFirstPost,indexOfLastPost);
+  }
+  
   return (
-    <Container sx={{ mt: "30px", width: "100vw", height: "100vh" }}>
+    <Container sx={{mt: "30px", width: "100vw", height: "100vh" }}>
       <Box
         sx={{
           boxShadow: "none",
           display: "flex",
-          ml: "70px",
-          gap: "420px",
+          ml: "50px",
+          gap:"50px",
+          flexWrap:"wrap",
+          justifyContent:"space-between",
           flexDirection: "row",
+          alignItems:"center"
         }}
       >
         <Paper
@@ -109,10 +130,13 @@ const Country = () => {
           >
             <SearchIcon />
           </IconButton>
-          <InputBase
+          <TextField
             sx={{ ml: 1, flex: 1 }}
             placeholder="Search for a country"
-            noValidate
+            variant="standard"
+            error={error}
+            id="outlined-error-helper-text"
+    
             onChange={handleChangeInput}
             onKeyDown={onKeyPressSearch}
             value={search}
@@ -168,12 +192,13 @@ const Country = () => {
             justifyContent="center"
             alignItems="center"
             sx={{
+              
               width: "100%",
               mt: "50px",
             }}
           >
             {currentPosts.map((elm, index) => (
-              <Grid key={index} item xs={8} sm={2.5} sx={{ m: "15px" }}>
+              <Grid key={index} item xs={8} sm={3} sx={{ m: "15px" }}>
                 <Card
                   variant="outlined"
                   sx={{ maxWidth: "445px", maxHeight: "2750px" }}
@@ -182,7 +207,7 @@ const Country = () => {
                     component="img"
                     height="140"
                     image={elm.flags[0]}
-                    alt="green iguana"
+                    alt={elm.name.common}
                   />
                   <CardContent>
                     <Typography
